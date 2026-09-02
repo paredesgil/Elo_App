@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #0D1B2A;
+  --navy-2: #142638;
+  --gold: #C9A227;
+  --gold-soft: #E4C669;
+  --off-white: #F4F1EA;
+  --graphite: #3A3A3A;
+
+  --font-serif: "Lora", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-off-white: var(--off-white);
+  --color-graphite: var(--graphite);
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background: var(--off-white);
+  font-family: var(--font-sans);
+  color: var(--graphite);
+}
