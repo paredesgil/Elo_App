@@ -24,18 +24,15 @@ export default async function PerfilPage() {
         <p className="text-xs text-off-white/60">
           {loja?.nome} · {loja?.cidade}/{loja?.uf}
         </p>
-        {membro.whatsapp && (
-          <a
-            href={`https://wa.me/55${membro.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            className="mt-1 flex items-center gap-1.5 rounded-full bg-gold/15 px-3.5 py-1.5 text-[12px] font-semibold text-gold"
-          >
-            Falar no WhatsApp
-          </a>
-        )}
       </header>
 
       <section className="mx-auto flex max-w-lg flex-col gap-3 px-5 py-6">
+        <Link
+          href="/membros"
+          className="rounded-xl border border-graphite/10 bg-white px-4 py-3.5 text-[14px] font-semibold text-navy"
+        >
+          Membros da loja
+        </Link>
         <Link
           href="/notificacoes"
           className="rounded-xl border border-graphite/10 bg-white px-4 py-3.5 text-[14px] font-semibold text-navy"
