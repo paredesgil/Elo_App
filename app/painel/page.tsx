@@ -27,7 +27,7 @@ export default async function PainelPage() {
     );
   }
 
-  const [{ data: convites }, { data: membrosPendentes }, { data: prestadoresPendentes }, { data: empresasPendentes }, { data: solicitacoes }] =
+  const [{ data: convites }, { data: membrosPendentes }, { data: prestadoresPendentes }, { data: empresasPendentes }, { data: solicitacoes }, { data: membrosAtivos }, { data: cargosAtuais }] =
     await Promise.all([
       supabase
         .from("convites")
@@ -55,16 +55,30 @@ export default async function PainelPage() {
         .select("id, data_pretendida, mensagem, status, created_at, membro_id, membros!inner(nome, whatsapp)")
         .eq("loja_destino_id", membro.loja_id)
         .eq("status", "pendente"),
+      supabase
+        .from("membros")
+        .select("id, nome")
+        .eq("loja_id", membro.loja_id)
+        .eq("status", "ativo")
+        .order("nome"),
+      supabase
+        .from("cargos_loja")
+        .select("id, cargo, membro_id, gestao_inicio")
+        .eq("loja_id", membro.loja_id)
+        .is("gestao_fim", null),
     ]);
 
   return (
     <PainelClient
+      lojaId={membro.loja_id}
       nomeMestre={membro.nome}
       convites={convites ?? []}
       membrosPendentes={membrosPendentes ?? []}
       prestadoresPendentes={prestadoresPendentes ?? []}
       empresasPendentes={empresasPendentes ?? []}
       solicitacoes={solicitacoes ?? []}
+      membrosAtivos={membrosAtivos ?? []}
+      cargosAtuais={cargosAtuais ?? []}
     />
   );
 }

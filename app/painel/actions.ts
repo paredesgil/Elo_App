@@ -120,3 +120,28 @@ export async function responderSolicitacaoVisita(id: string, status: "aprovado" 
   revalidatePath("/painel");
   return { ok: true };
 }
+
+export async function atribuirCargoAction(lojaId: string, membroId: string, cargo: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("atribuir_cargo", {
+    p_loja_id: lojaId,
+    p_membro_id: membroId,
+    p_cargo: cargo,
+  });
+  if (error) return { error: "Não foi possível atribuir o cargo." };
+  revalidatePath("/painel");
+  revalidatePath("/membros");
+  return { ok: true, data };
+}
+
+export async function encerrarCargoAction(cargoId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("cargos_loja")
+    .update({ gestao_fim: new Date().toISOString().slice(0, 10) })
+    .eq("id", cargoId);
+  if (error) return { error: "Não foi possível encerrar o cargo." };
+  revalidatePath("/painel");
+  revalidatePath("/membros");
+  return { ok: true };
+}

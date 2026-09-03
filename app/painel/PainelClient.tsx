@@ -9,6 +9,8 @@ import {
   atualizarStatusPrestador,
   atualizarStatusEmpresa,
   responderSolicitacaoVisita,
+  atribuirCargoAction,
+  encerrarCargoAction,
 } from "./actions";
 
 type Convite = { id: string; codigo: string; status: string; validade: string; created_at: string };
@@ -30,30 +32,53 @@ type Solicitacao = {
   membros: { nome: string; whatsapp: string | null } | { nome: string; whatsapp: string | null }[];
 };
 
-type Aba = "convites" | "membros" | "prestadores" | "empresas" | "visitas";
+type Aba = "convites" | "membros" | "prestadores" | "empresas" | "visitas" | "cargos";
+
+const CARGOS_DISPONIVEIS = [
+  "Venerável Mestre",
+  "Secretário",
+  "Chanceler",
+  "Tesoureiro",
+  "Primeiro Vigilante",
+  "Segundo Vigilante",
+  "Orador",
+  "Chaveiro",
+  "Outro",
+];
+
+type MembroAtivo = { id: string; nome: string };
+type CargoAtual = { id: string; cargo: string; membro_id: string; gestao_inicio: string };
 
 function nomeDoMembro(m: Solicitacao["membros"]) {
   return Array.isArray(m) ? m[0]?.nome : m.nome;
 }
 
 export function PainelClient({
+  lojaId,
   nomeMestre,
   convites,
   membrosPendentes,
   prestadoresPendentes,
   empresasPendentes,
   solicitacoes,
+  membrosAtivos,
+  cargosAtuais,
 }: {
+  lojaId: string;
   nomeMestre: string;
   convites: Convite[];
   membrosPendentes: MembroPendente[];
   prestadoresPendentes: ItemPendente[];
   empresasPendentes: ItemPendente[];
   solicitacoes: Solicitacao[];
+  membrosAtivos: MembroAtivo[];
+  cargosAtuais: CargoAtual[];
 }) {
   const [aba, setAba] = useState<Aba>("convites");
   const [pending, startTransition] = useTransition();
   const [novoCodigo, setNovoCodigo] = useState<string | null>(null);
+  const [cargoSelecionado, setCargoSelecionado] = useState(CARGOS_DISPONIVEIS[0]);
+  const [membroSelecionado, setMembroSelecionado] = useState(membrosAtivos[0]?.id ?? "");
 
   const abas: { id: Aba; label: string; contagem: number }[] = [
     { id: "convites", label: "Convites", contagem: convites.length },
@@ -61,6 +86,7 @@ export function PainelClient({
     { id: "prestadores", label: "Prestadores", contagem: prestadoresPendentes.length },
     { id: "empresas", label: "Empresas", contagem: empresasPendentes.length },
     { id: "visitas", label: "Visitas", contagem: solicitacoes.length },
+    { id: "cargos", label: "Cargos", contagem: 0 },
   ];
 
   function gerarConvite() {
@@ -271,6 +297,68 @@ export function PainelClient({
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {aba === "cargos" && (
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3 rounded-xl border border-graphite/10 bg-white p-4">
+              <p className="text-[13px] font-semibold text-navy">Atribuir cargo</p>
+              <select
+                value={cargoSelecionado}
+                onChange={(e) => setCargoSelecionado(e.target.value)}
+                className="rounded-lg border border-graphite/20 bg-white px-3 py-2 text-sm text-graphite"
+              >
+                {CARGOS_DISPONIVEIS.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <select
+                value={membroSelecionado}
+                onChange={(e) => setMembroSelecionado(e.target.value)}
+                className="rounded-lg border border-graphite/20 bg-white px-3 py-2 text-sm text-graphite"
+              >
+                {membrosAtivos.map((m) => (
+                  <option key={m.id} value={m.id}>{m.nome}</option>
+                ))}
+              </select>
+              <button
+                disabled={pending || !membroSelecionado}
+                onClick={() =>
+                  startTransition(async () => {
+                    await atribuirCargoAction(lojaId, membroSelecionado, cargoSelecionado);
+                  })
+                }
+                className="rounded-lg bg-navy py-2.5 text-[13px] font-bold text-off-white disabled:opacity-60"
+              >
+                {pending ? "Salvando..." : "Atribuir"}
+              </button>
+              <p className="text-[11px] text-graphite/50">
+                Atribuir um cargo já ocupado encerra automaticamente a gestão anterior.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {cargosAtuais.length === 0 && (
+                <p className="text-sm text-graphite/50">Nenhum cargo atribuído ainda.</p>
+              )}
+              {cargosAtuais.map((c) => {
+                const nome = membrosAtivos.find((m) => m.id === c.membro_id)?.nome ?? "—";
+                return (
+                  <div key={c.id} className="flex items-center justify-between rounded-lg border border-graphite/10 bg-white px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-navy">{c.cargo}</p>
+                      <p className="text-[12px] text-graphite/55">{nome}</p>
+                    </div>
+                    <button
+                      onClick={() => startTransition(async () => { await encerrarCargoAction(c.id); })}
+                      className="rounded-lg border border-graphite/20 px-3 py-1.5 text-[12px] text-graphite/70"
+                    >
+                      Encerrar
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
