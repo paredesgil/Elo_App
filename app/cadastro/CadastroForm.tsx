@@ -54,26 +54,21 @@ export function CadastroForm() {
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password: senha,
-    });
-
-    if (signUpError) {
-      setCarregando(false);
-      setErro(signUpError.message.includes("already registered")
-        ? "Este e-mail já está cadastrado."
-        : "Não foi possível criar a conta. Tente novamente.");
-      return;
-    }
-
-    const { error: resgateError } = await supabase.rpc("resgatar_convite", {
-      p_codigo: codigo.trim().toUpperCase(),
-      p_nome: nome,
-      p_whatsapp: whatsapp,
+      options: {
+        data: {
+          convite_codigo: codigo.trim().toUpperCase(),
+          nome,
+          whatsapp,
+        },
+      },
     });
 
     setCarregando(false);
 
-    if (resgateError) {
-      setErro("Conta criada, mas houve um problema ao vincular seu convite. Fale com seu Mestre.");
+    if (signUpError) {
+      setErro(signUpError.message.includes("already registered")
+        ? "Este e-mail já está cadastrado."
+        : "Não foi possível criar a conta. Tente novamente.");
       return;
     }
 
