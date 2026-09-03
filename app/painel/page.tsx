@@ -70,6 +70,9 @@ export default async function PainelPage() {
         .is("gestao_fim", null),
     ]);
 
+  const { data: potencias } = await supabase.from("potencias").select("id, nome, sigla").order("nome");
+  const { data: outrasLojas } = await supabase.from("lojas").select("id, nome, cidade, uf").order("nome");
+
   return (
     <PainelClient
       lojaId={membro.loja_id}
@@ -82,6 +85,8 @@ export default async function PainelPage() {
       solicitacoes={solicitacoes ?? []}
       membrosAtivos={membrosAtivos ?? []}
       cargosAtuais={cargosAtuais ?? []}
+      potencias={potencias ?? []}
+      outrasLojas={outrasLojas ?? []}
     />
   );
 }

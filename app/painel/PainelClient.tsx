@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { EloMark } from "@/components/EloMark";
 import { BackButton } from "@/components/BackButton";
+import { AbaRede } from "./AbaRede";
 import {
   criarConvite,
   atualizarStatusMembro,
@@ -11,6 +12,7 @@ import {
   responderSolicitacaoVisita,
   atribuirCargoAction,
   encerrarCargoAction,
+  atualizarGrauAction,
 } from "./actions";
 
 type Convite = { id: string; codigo: string; status: string; validade: string; created_at: string };
@@ -32,7 +34,10 @@ type Solicitacao = {
   membros: { nome: string; whatsapp: string | null } | { nome: string; whatsapp: string | null }[];
 };
 
-type Aba = "convites" | "membros" | "prestadores" | "empresas" | "visitas" | "cargos";
+type Aba = "convites" | "membros" | "prestadores" | "empresas" | "visitas" | "cargos" | "rede";
+
+type Potencia = { id: string; nome: string; sigla: string | null };
+type LojaResumo = { id: string; nome: string; cidade: string; uf: string };
 
 const CARGOS_DISPONIVEIS = [
   "Venerável Mestre",
@@ -43,8 +48,11 @@ const CARGOS_DISPONIVEIS = [
   "Segundo Vigilante",
   "Orador",
   "Chaveiro",
+  "Mestre de Cerimônias",
   "Outro",
 ];
+
+const GRAUS_DISPONIVEIS = ["Aprendiz", "Companheiro", "Mestre"];
 
 type MembroAtivo = { id: string; nome: string };
 type CargoAtual = { id: string; cargo: string; membro_id: string; gestao_inicio: string };
@@ -64,6 +72,8 @@ export function PainelClient({
   solicitacoes,
   membrosAtivos,
   cargosAtuais,
+  potencias,
+  outrasLojas,
 }: {
   lojaId: string;
   nomeLoja: string;
@@ -75,6 +85,8 @@ export function PainelClient({
   solicitacoes: Solicitacao[];
   membrosAtivos: MembroAtivo[];
   cargosAtuais: CargoAtual[];
+  potencias: Potencia[];
+  outrasLojas: LojaResumo[];
 }) {
   const [aba, setAba] = useState<Aba>("convites");
   const [pending, startTransition] = useTransition();
@@ -86,6 +98,8 @@ export function PainelClient({
   }, []);
   const [cargoSelecionado, setCargoSelecionado] = useState(CARGOS_DISPONIVEIS[0]);
   const [membroSelecionado, setMembroSelecionado] = useState(membrosAtivos[0]?.id ?? "");
+  const [grauSelecionado, setGrauSelecionado] = useState(GRAUS_DISPONIVEIS[0]);
+  const [membroGrauSelecionado, setMembroGrauSelecionado] = useState(membrosAtivos[0]?.id ?? "");
 
   const abas: { id: Aba; label: string; contagem: number }[] = [
     { id: "convites", label: "Convites", contagem: convites.length },
@@ -94,6 +108,7 @@ export function PainelClient({
     { id: "empresas", label: "Empresas", contagem: empresasPendentes.length },
     { id: "visitas", label: "Visitas", contagem: solicitacoes.length },
     { id: "cargos", label: "Cargos", contagem: 0 },
+    { id: "rede", label: "Rede", contagem: 0 },
   ];
 
   function gerarConvite() {
@@ -364,6 +379,39 @@ export function PainelClient({
               </p>
             </div>
 
+            <div className="flex flex-col gap-3 rounded-xl border border-graphite/10 bg-white p-4">
+              <p className="text-[13px] font-semibold text-navy">Definir grau</p>
+              <select
+                value={grauSelecionado}
+                onChange={(e) => setGrauSelecionado(e.target.value)}
+                className="rounded-lg border border-graphite/20 bg-white px-3 py-2 text-sm text-graphite"
+              >
+                {GRAUS_DISPONIVEIS.map((g) => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+              <select
+                value={membroGrauSelecionado}
+                onChange={(e) => setMembroGrauSelecionado(e.target.value)}
+                className="rounded-lg border border-graphite/20 bg-white px-3 py-2 text-sm text-graphite"
+              >
+                {membrosAtivos.map((m) => (
+                  <option key={m.id} value={m.id}>{m.nome}</option>
+                ))}
+              </select>
+              <button
+                disabled={pending || !membroGrauSelecionado}
+                onClick={() =>
+                  startTransition(async () => {
+                    await atualizarGrauAction(membroGrauSelecionado, grauSelecionado);
+                  })
+                }
+                className="rounded-lg bg-navy py-2.5 text-[13px] font-bold text-off-white disabled:opacity-60"
+              >
+                {pending ? "Salvando..." : "Definir grau"}
+              </button>
+            </div>
+
             <div className="flex flex-col gap-2">
               {cargosAtuais.length === 0 && (
                 <p className="text-sm text-graphite/50">Nenhum cargo atribuído ainda.</p>
@@ -388,6 +436,8 @@ export function PainelClient({
             </div>
           </div>
         )}
+
+        {aba === "rede" && <AbaRede potencias={potencias} lojas={outrasLojas} />}
       </div>
     </main>
   );

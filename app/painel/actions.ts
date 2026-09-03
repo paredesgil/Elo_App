@@ -145,3 +145,51 @@ export async function encerrarCargoAction(cargoId: string) {
   revalidatePath("/membros");
   return { ok: true };
 }
+
+export async function atualizarGrauAction(membroId: string, grau: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("membros").update({ grau }).eq("id", membroId);
+  if (error) return { error: "Não foi possível atualizar o grau." };
+  revalidatePath("/painel");
+  revalidatePath("/membros");
+  return { ok: true };
+}
+
+export async function criarPotenciaAction(nome: string, sigla: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("potencias").insert({ nome, sigla: sigla || null });
+  if (error) return { error: "Não foi possível cadastrar a potência." };
+  revalidatePath("/painel");
+  return { ok: true };
+}
+
+export async function criarLojaAction(dados: {
+  nome: string;
+  numero: string;
+  cidade: string;
+  uf: string;
+  endereco: string;
+  dia_reuniao: string;
+  horario_reuniao: string;
+  contato_secretario: string;
+  potencia_id: string;
+}) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("lojas").insert({
+    nome: dados.nome,
+    numero: dados.numero || null,
+    cidade: dados.cidade,
+    uf: dados.uf,
+    endereco: dados.endereco || null,
+    dia_reuniao: dados.dia_reuniao || null,
+    horario_reuniao: dados.horario_reuniao || null,
+    contato_secretario: dados.contato_secretario || null,
+    potencia_id: dados.potencia_id || null,
+  });
+  if (error) return { error: "Não foi possível cadastrar a loja." };
+  revalidatePath("/painel");
+  revalidatePath("/lojas");
+  revalidatePath("/membros");
+  revalidatePath("/visitas/nova");
+  return { ok: true };
+}
