@@ -44,17 +44,17 @@ export default async function PainelPage() {
         .eq("status", "pendente"),
       supabase
         .from("prestadores")
-        .select("id, nome, categoria, whatsapp, cidade, created_at, membro_id, membros!inner(loja_id)")
+        .select("id, nome, categoria, whatsapp, cidade, created_at, membro_id, membros!prestadores_membro_id_fkey(loja_id)")
         .eq("status", "pendente")
         .eq("membros.loja_id", membro.loja_id),
       supabase
         .from("empresas")
-        .select("id, nome, categoria, whatsapp, cidade, created_at, membro_id, membros!inner(loja_id)")
+        .select("id, nome, categoria, whatsapp, cidade, created_at, membro_id, membros!empresas_membro_id_fkey(loja_id)")
         .eq("status", "pendente")
         .eq("membros.loja_id", membro.loja_id),
       supabase
         .from("solicitacoes_visita")
-        .select("id, data_pretendida, mensagem, status, created_at, membro_id, membros!inner(nome, whatsapp)")
+        .select("id, data_pretendida, mensagem, status, created_at, membro_id, membros!solicitacoes_visita_membro_id_fkey(nome, whatsapp)")
         .eq("loja_destino_id", membro.loja_id)
         .eq("status", "pendente"),
       supabase
