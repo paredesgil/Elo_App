@@ -27,6 +27,8 @@ export default async function PainelPage() {
     );
   }
 
+  const { data: loja } = await supabase.from("lojas").select("nome").eq("id", membro.loja_id).single();
+
   const [{ data: convites }, { data: membrosPendentes }, { data: prestadoresPendentes }, { data: empresasPendentes }, { data: solicitacoes }, { data: membrosAtivos }, { data: cargosAtuais }] =
     await Promise.all([
       supabase
@@ -71,6 +73,7 @@ export default async function PainelPage() {
   return (
     <PainelClient
       lojaId={membro.loja_id}
+      nomeLoja={loja?.nome ?? "sua loja"}
       nomeMestre={membro.nome}
       convites={convites ?? []}
       membrosPendentes={membrosPendentes ?? []}

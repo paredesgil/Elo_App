@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { EloMark } from "@/components/EloMark";
 import { BackButton } from "@/components/BackButton";
 import {
@@ -55,6 +55,7 @@ function nomeDoMembro(m: Solicitacao["membros"]) {
 
 export function PainelClient({
   lojaId,
+  nomeLoja,
   nomeMestre,
   convites,
   membrosPendentes,
@@ -65,6 +66,7 @@ export function PainelClient({
   cargosAtuais,
 }: {
   lojaId: string;
+  nomeLoja: string;
   nomeMestre: string;
   convites: Convite[];
   membrosPendentes: MembroPendente[];
@@ -77,6 +79,11 @@ export function PainelClient({
   const [aba, setAba] = useState<Aba>("convites");
   const [pending, startTransition] = useTransition();
   const [novoCodigo, setNovoCodigo] = useState<string | null>(null);
+  const [origemApp, setOrigemApp] = useState("");
+
+  useEffect(() => {
+    setOrigemApp(window.location.origin);
+  }, []);
   const [cargoSelecionado, setCargoSelecionado] = useState(CARGOS_DISPONIVEIS[0]);
   const [membroSelecionado, setMembroSelecionado] = useState(membrosAtivos[0]?.id ?? "");
 
@@ -143,6 +150,15 @@ export function PainelClient({
               <div className="rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-center">
                 <p className="text-[11px] text-graphite/60">Envie este código ao convidado:</p>
                 <p className="mt-1 font-serif text-lg font-semibold tracking-wide text-navy">{novoCodigo}</p>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(
+                    `Você foi convidado para o Elo — rede exclusiva dos irmãos da ${nomeLoja}.\n\nAcesse o link e cadastre-se:\n${origemApp}/cadastro?convite=${novoCodigo}\n\nOu digite o código manualmente na tela de cadastro:\n${novoCodigo}`
+                  )}`}
+                  target="_blank"
+                  className="mt-3 inline-block rounded-lg bg-[#25D366] px-4 py-2 text-[12.5px] font-bold text-white"
+                >
+                  Compartilhar no WhatsApp
+                </a>
               </div>
             )}
 
@@ -172,6 +188,17 @@ export function PainelClient({
                   >
                     {c.status}
                   </span>
+                  {c.status === "ativo" && (
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(
+                        `Você foi convidado para o Elo — rede exclusiva dos irmãos da ${nomeLoja}.\n\nAcesse o link e cadastre-se:\n${origemApp}/cadastro?convite=${c.codigo}\n\nOu digite o código manualmente na tela de cadastro:\n${c.codigo}`
+                      )}`}
+                      target="_blank"
+                      className="ml-2 shrink-0 rounded-lg bg-[#25D366] px-2.5 py-1.5 text-[11px] font-bold text-white"
+                    >
+                      Compartilhar
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
