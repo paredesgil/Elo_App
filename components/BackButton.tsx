@@ -9,8 +9,10 @@ export function BackButton({ light = false }: { light?: boolean }) {
     <button
       onClick={() => router.back()}
       aria-label="Voltar"
-      className={`absolute left-4 top-12 flex h-8 w-8 items-center justify-center rounded-full text-lg ${
-        light ? "text-off-white/80 hover:text-off-white" : "text-graphite/70"
+      className={`absolute left-4 top-10 flex h-10 w-10 items-center justify-center rounded-full text-2xl transition ${
+        light
+          ? "bg-off-white/10 text-off-white hover:bg-off-white/20"
+          : "bg-graphite/5 text-graphite hover:bg-graphite/10"
       }`}
     >
       ←
