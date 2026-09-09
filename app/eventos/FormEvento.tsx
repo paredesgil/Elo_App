@@ -44,6 +44,8 @@ export function FormEvento({ lojaId }: { lojaId: string }) {
         data_hora: formData.get("data_hora") as string,
         contato_responsavel: formData.get("contato_responsavel") as string,
         arte_url: arteUrl,
+        anuncio_inicio: (formData.get("anuncio_inicio") as string) || new Date().toISOString(),
+        anuncio_fim: (formData.get("anuncio_fim") as string) || null,
       });
 
       if (error) {
@@ -73,6 +75,16 @@ export function FormEvento({ lojaId }: { lojaId: string }) {
       <input name="titulo" required placeholder="Título do evento" className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
       <input name="local" placeholder="Local" className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
       <input name="data_hora" type="datetime-local" required className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-semibold text-graphite">Anúncio visível a partir de (opcional)</label>
+        <input name="anuncio_inicio" type="datetime-local" className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-semibold text-graphite">Anúncio visível até (opcional)</label>
+        <input name="anuncio_fim" type="datetime-local" className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
+      </div>
+
       <input name="contato_responsavel" placeholder="WhatsApp do responsável" className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
       <textarea name="descricao" placeholder="Descrição" rows={2} className="border-0 border-b border-graphite/20 bg-transparent py-2 text-sm outline-none focus:border-gold" />
 

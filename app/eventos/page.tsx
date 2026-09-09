@@ -10,10 +10,13 @@ export default async function EventosPage() {
   if (!user) redirect("/login");
   if (!membro) redirect("/login");
 
+  const agora = new Date().toISOString();
   const { data: eventos } = await supabase
     .from("eventos")
-    .select("id, titulo, descricao, local, data_hora, arte_url, contato_responsavel")
+    .select("id, titulo, descricao, local, data_hora, arte_url, contato_responsavel, anuncio_fim")
     .eq("loja_id", membro.loja_id)
+    .lte("anuncio_inicio", agora)
+    .or(`anuncio_fim.is.null,anuncio_fim.gte.${agora}`)
     .order("data_hora", { ascending: true });
 
   const { data: minhasConfirmacoes } = await supabase

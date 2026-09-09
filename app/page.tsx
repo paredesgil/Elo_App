@@ -21,12 +21,15 @@ export default async function HomePage() {
     );
   }
 
+  const agora = new Date().toISOString();
   const [{ data: eventos }, { data: prestadores }, { data: empresas }] = await Promise.all([
     supabase
       .from("eventos")
       .select("id, titulo, local, data_hora")
       .eq("loja_id", membro.loja_id)
-      .gte("data_hora", new Date().toISOString())
+      .gte("data_hora", agora)
+      .lte("anuncio_inicio", agora)
+      .or(`anuncio_fim.is.null,anuncio_fim.gte.${agora}`)
       .order("data_hora", { ascending: true })
       .limit(3),
     supabase
