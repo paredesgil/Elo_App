@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { EloMark } from "@/components/EloMark";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { AbaRede } from "./AbaRede";
 import {
   criarConvite,
@@ -120,12 +119,7 @@ export function PainelClient({
 
   return (
     <main className="min-h-screen bg-off-white">
-      <header className="relative flex flex-col items-center gap-3 bg-gradient-to-br from-navy to-navy-2 px-6 pb-8 pt-12">
-        <BackButton light />
-        <EloMark size={40} />
-        <h1 className="font-serif text-xl font-semibold text-off-white">Painel do Mestre</h1>
-        <p className="text-xs text-off-white/60">{nomeMestre}</p>
-      </header>
+      <PageHeader title="Painel do Mestre" subtitle={nomeMestre} comVoltar />
 
       <nav className="flex gap-1 overflow-x-auto border-b border-graphite/10 bg-off-white px-4 py-2">
         {abas.map((a) => (

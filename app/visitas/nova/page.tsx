@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMembroAtual } from "@/lib/membro";
-import { EloMark } from "@/components/EloMark";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { solicitarVisita } from "../actions";
 
 export default async function NovaVisitaPage() {
@@ -17,11 +16,7 @@ export default async function NovaVisitaPage() {
 
   return (
     <main className="min-h-screen bg-off-white pb-16">
-      <header className="relative flex flex-col items-center gap-2.5 bg-gradient-to-br from-navy to-navy-2 px-6 pb-8 pt-12">
-        <BackButton light />
-        <EloMark size={36} />
-        <h1 className="font-serif text-lg font-semibold text-off-white">Solicitar visita</h1>
-      </header>
+      <PageHeader title="Solicitar visita" comVoltar />
 
       <form action={solicitarVisita} className="mx-auto flex max-w-lg flex-col gap-4 px-5 py-6">
         <div className="flex flex-col gap-1.5">

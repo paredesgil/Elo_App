@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getMembroAtual } from "@/lib/membro";
 import { BottomNav } from "@/components/BottomNav";
+import { PageHeader } from "@/components/PageHeader";
 import { RsvpButtons } from "./RsvpButtons";
 import { FormEvento } from "./FormEvento";
 
@@ -25,10 +26,7 @@ export default async function EventosPage() {
 
   return (
     <main className="min-h-screen bg-off-white pb-24">
-      <header className="bg-gradient-to-br from-navy to-navy-2 px-6 py-8">
-        <h1 className="font-serif text-xl font-semibold text-off-white">Eventos e ações</h1>
-        <p className="mt-1 text-xs text-off-white/60">Almoços, encontros e confraternizações</p>
-      </header>
+      <PageHeader title="Eventos e ações" subtitle="Almoços, encontros e confraternizações" />
 
       <section className="mx-auto max-w-lg px-5 py-6">
         {podeGerenciar && <FormEvento lojaId={membro.loja_id} />}

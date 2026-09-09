@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMembroAtual } from "@/lib/membro";
-import { EloMark } from "@/components/EloMark";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { ChavePix } from "./ChavePix";
 
@@ -11,11 +10,7 @@ export default async function ApoiarPage() {
 
   return (
     <main className="min-h-screen bg-off-white pb-24">
-      <header className="relative flex flex-col items-center gap-2.5 bg-gradient-to-br from-navy to-navy-2 px-6 pb-8 pt-12">
-        <BackButton light />
-        <EloMark size={36} />
-        <h1 className="font-serif text-lg font-semibold text-off-white">Apoiar o Elo</h1>
-      </header>
+      <PageHeader title="Apoiar o Elo" comVoltar />
 
       <section className="mx-auto flex max-w-lg flex-col items-center gap-4 px-6 py-8 text-center">
         <p className="text-sm leading-relaxed text-graphite/70">

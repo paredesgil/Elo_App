@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getMembroAtual } from "@/lib/membro";
 import { BottomNav } from "@/components/BottomNav";
+import { PageHeader } from "@/components/PageHeader";
 import { FormPrestador } from "./FormPrestador";
 
 export default async function PrestadoresPage() {
@@ -15,10 +16,7 @@ export default async function PrestadoresPage() {
 
   return (
     <main className="min-h-screen bg-off-white pb-24">
-      <header className="bg-gradient-to-br from-navy to-navy-2 px-6 py-8">
-        <h1 className="font-serif text-xl font-semibold text-off-white">Prestadores de serviço</h1>
-        <p className="mt-1 text-xs text-off-white/60">Indicados por irmãos da rede</p>
-      </header>
+      <PageHeader title="Prestadores de serviço" subtitle="Indicados por irmãos da rede" />
 
       <section className="mx-auto max-w-lg px-5 py-6">
         <FormPrestador />
