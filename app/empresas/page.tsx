@@ -4,15 +4,33 @@ import { BottomNav } from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import { FormEmpresa } from "./FormEmpresa";
 
-export default async function EmpresasPage() {
+export default async function EmpresasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>;
+}) {
   const { supabase, user, membro } = await getMembroAtual();
   if (!user) redirect("/login");
 
-  const { data: empresas } = await supabase
+  const params = await searchParams;
+  const categoriaFiltro = params.categoria || "";
+
+  const { data: todasCategorias } = await supabase
+    .from("empresas")
+    .select("categoria")
+    .eq("status", "aprovado");
+
+  const categorias = Array.from(
+    new Set((todasCategorias ?? []).map((c) => c.categoria).filter(Boolean))
+  ).sort();
+
+  let query = supabase
     .from("empresas")
     .select("id, nome, categoria, descricao, whatsapp, site, cidade")
     .eq("status", "aprovado")
     .order("nome");
+  if (categoriaFiltro) query = query.eq("categoria", categoriaFiltro);
+  const { data: empresas } = await query;
 
   return (
     <main className="min-h-screen bg-off-white pb-24">
@@ -21,8 +39,26 @@ export default async function EmpresasPage() {
       <section className="mx-auto max-w-lg px-5 py-6">
         <FormEmpresa />
 
+        {categorias.length > 0 && (
+          <form className="mb-4 flex gap-2">
+            <select
+              name="categoria"
+              defaultValue={categoriaFiltro}
+              className="flex-1 rounded-lg border border-graphite/20 bg-white px-3 py-2 text-sm text-graphite"
+            >
+              <option value="">Todas as categorias</option>
+              {categorias.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <button type="submit" className="rounded-lg bg-navy px-4 text-[13px] font-bold text-off-white">
+              Filtrar
+            </button>
+          </form>
+        )}
+
         {(!empresas || empresas.length === 0) && (
-          <p className="text-sm text-graphite/50">Nenhuma empresa aprovada ainda.</p>
+          <p className="text-sm text-graphite/50">Nenhuma empresa encontrada.</p>
         )}
 
         <div className="flex flex-col gap-2">
