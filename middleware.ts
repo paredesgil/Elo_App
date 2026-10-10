@@ -30,8 +30,10 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isAuthRoute = path.startsWith("/login") || path.startsWith("/cadastro");
-  const isPublicRoute = isAuthRoute || path.startsWith("/_next") || path.startsWith("/api");
+  const isAuthRoute =
+    path.startsWith("/login") || path.startsWith("/cadastro") || path.startsWith("/esqueci-senha");
+  const isPublicRoute =
+    isAuthRoute || path.startsWith("/auth") || path.startsWith("/_next") || path.startsWith("/api");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

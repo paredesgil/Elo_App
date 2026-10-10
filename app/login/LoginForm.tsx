@@ -65,6 +65,10 @@ export function LoginForm() {
         />
       </div>
 
+      <a href="/esqueci-senha" className="-mt-1 self-end text-xs font-semibold text-graphite/70 underline decoration-gold">
+        Esqueci minha senha
+      </a>
+
       {erro && <p className="text-xs text-red-700">{erro}</p>}
 
       <button
